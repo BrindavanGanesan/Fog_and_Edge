@@ -6,11 +6,11 @@ import ast
 import traceback
 from datetime import datetime
 
-# 📡 Event Hub Connection Details
+# Event Hub Connection Details
 CONNECTION_STR = "Endpoint=sb://ihsuprodlnres010dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=gzLViL0cRaZmYjOQ7dGmRWoyAiWW9+IsnAIoTPWLN1I=;EntityPath=iothub-ehub-brindavand-56805614-86dc16d158"
 EVENTHUB_NAME = "iothub-ehub-brindavand-56805614-86dc16d158"
 
-# 📥 Shared Queue for Dashboard
+# Shared Queue for Dashboard
 telemetry_queue = queue.Queue()
 
 def normalize_weather(data):
@@ -29,18 +29,17 @@ async def on_event(partition_context, event):
         print(f"✅ Message received from partition {partition_context.partition_id}")
         print(f"📦 Raw Telemetry: {data}")
 
-        # 🔹 Handle single telemetry dict
+        # Handle single telemetry dict
         if isinstance(data, dict):
             data["timestamp"] = datetime.now()
 
-            # ✅ Detect if it's weather telemetry
             if any(k in data for k in ["temp", "temperature", "hum", "humidity"]):
                 data = normalize_weather(data)
                 print("🌦️ Detected Weather Telemetry")
 
             telemetry_queue.put(data)
 
-        # 🔹 Handle list of asteroid telemetry
+        # Handle list of asteroid telemetry
         elif isinstance(data, list):
             for obj in data:
                 obj["timestamp"] = datetime.now()

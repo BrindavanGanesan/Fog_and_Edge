@@ -2,20 +2,20 @@ import time, json, csv, requests, sys, random
 from datetime import datetime
 from azure.iot.device import IoTHubDeviceClient, Message
 
-# 🔑 Azure IoT Hub Device Connection String
+# Azure IoT Hub Device Connection String
 CONNECTION_STRING = "HostName=BrindavanDevices.azure-devices.net;DeviceId=device001;SharedAccessKey=gzLViL0cRaZmYjOQ7dGmRWoyAiWW9+IsnAIoTPWLN1I="
 
-# 🌌 NASA API Configuration
+# NASA API Configuration
 NASA_API_KEY = "NxJ7RKJ2CZgW2DWUGmCESXBugqWYG6qH7IGDzDM0"
 NASA_URL = f"https://api.nasa.gov/neo/rest/v1/feed?start_date={datetime.now().strftime('%Y-%m-%d')}&api_key={NASA_API_KEY}"
 
-# 📂 CSV Logging
+# CSV Logging
 csv_file = open("telemetry_log.csv", "a", newline="")
 csv_writer = csv.writer(csv_file)
 if csv_file.tell() == 0:
     csv_writer.writerow(["timestamp", "object_name", "distance_km", "velocity_kmh", "alert", "temperature", "humidity"])
 
-# ✅ IoT Hub Client
+# IoT Hub Client
 def create_client():
     print("🔌 Connecting to Azure IoT Hub...")
     client = IoTHubDeviceClient.create_from_connection_string(CONNECTION_STRING)
@@ -23,7 +23,7 @@ def create_client():
     print("✅ Connected to IoT Hub.\n")
     return client
 
-# ✅ Fetch Top 5 Asteroids
+# Fetch Top 5 Asteroids
 def get_top_asteroids():
     try:
         r = requests.get(NASA_URL, timeout=10)
@@ -56,10 +56,10 @@ def get_top_asteroids():
         print("⚠️ Error fetching NASA data:", e)
         return []
 
-# ✅ Simulate Weather Telemetry (replace with actual sensor or OpenWeather API)
+# Simulate Weather Telemetry
 def get_weather():
-    temperature = round(random.uniform(15, 30), 2)  # Simulate temp (°C)
-    humidity = round(random.uniform(40, 90), 2)     # Simulate humidity (%)
+    temperature = round(random.uniform(15, 30), 2)  
+    humidity = round(random.uniform(40, 90), 2)     
     alert = "NORMAL" if temperature < 35 else "ALERT"
     return {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -68,7 +68,7 @@ def get_weather():
         "alert": alert
     }
 
-# ✅ Main Loop
+# Main Loop
 client = create_client()
 try:
     while True:
@@ -77,11 +77,11 @@ try:
             weather = get_weather()
 
             if asteroids:
-                # 🔹 Send asteroid batch
+                # Send asteroid batch
                 client.send_message(Message(json.dumps(asteroids)))
                 print(f"📤 Sent {len(asteroids)} asteroid objects")
 
-            # 🔹 Send weather separately
+            # Send weather separately
             client.send_message(Message(json.dumps(weather)))
             print(f"🌦️ Sent weather data: {weather}")
 
